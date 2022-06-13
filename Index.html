@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fabric.js</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://rawgit.com/kangax/fabric.js/master/dist/fabric.min.js"></script>
+</head>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://rawgit.com/kangax/fabric.js/master/dist/fabric.min.js"></script>
+    <input type="file" id="file"><br>
+    <div class="canvas-container" style="width: 200px; height: 500px; position: relative; user-select: none;">
+        <canvas id="canvas" width="1000px" height="800px" class="lower-canvas"
+            style="position: absolute; width: 800px; height: 800px; left: 0px; top: 0px; touch-action: none; user-select: none;">
+        </canvas>
+        <!-- <canvas
+            class="upper-canvas " width="950" height="950"
+            style="position: absolute; width: 950px; height: 850px; left: 0px; top: 0px; touch-action: none; user-select: none; cursor: default;">
+        </canvas> -->
+    </div>
+
+
+
+
+    <script type="text/javascript">
+        var canvas = new fabric.Canvas('canvas');
+        document.getElementById('file').addEventListener("change", function (e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function (f) {
+                var data = f.target.result;
+                fabric.Image.fromURL(data, function (img) {
+                    var oImg = img.set({ left: 2, top: 0, angle: 00, width: 1600, height: 600 }).scale(0.9);
+                    canvas.add(oImg).renderAll();
+                    var a = canvas.setActiveObject(oImg);
+                    var dataURL = canvas.toDataURL({ format: 'png', quality: 0.8 });
+                    canvas.zoomToPoint() ;
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+
+
+
+        
+        canvas.on('mouse:down', function(opt) {
+  var evt = opt.e;
+  if (evt.altKey === true) {
+    this.isDragging = true;
+    this.selection = false;
+    this.lastPosX = evt.clientX;
+    this.lastPosY = evt.clientY;
+  }
+});
+canvas.on('mouse:move', function(opt) {
+  if (this.isDragging) {
+    var e = opt.e;
+    var vpt = this.viewportTransform;
+    vpt[4] += e.clientX - this.lastPosX;
+    vpt[5] += e.clientY - this.lastPosY;
+    this.requestRenderAll();
+    this.lastPosX = e.clientX;
+    this.lastPosY = e.clientY;
+  }
+});
+canvas.on('mouse:up', function(opt) {
+  // on mouse up we want to recalculate new interaction
+  // for all objects, so we call setViewportTransform
+  this.setViewportTransform(this.viewportTransform);
+  this.isDragging = false;
+  this.selection = true;
+});
+    </script>
+
+
+</body>
+
+</html>
