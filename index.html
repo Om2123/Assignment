@@ -43,11 +43,14 @@
             border-radius: 4px;
             color: #fff;
         }
-            .pagenum, .active{
-                margin: 5px;
-                /* color: #d9534f; */
-                font-size: 22px;
-            }
+
+        .pagenum,
+        .active {
+            margin: 5px;
+            /* color: #d9534f; */
+            font-size: 22px;
+        }
+
         .savebt {
 
             padding: 10px 20px;
@@ -159,73 +162,74 @@
 
                 const parsedData = Papa.parse(dataString, { header: true }).data;
                 data.push(...parsedData);
-                const list = document.getElementById('list');
 
-                const currentData = getCurrentData();
 
-            function render(){
+                function render() {
+                    const list = document.getElementById('list');
+                    list.innerHTML = "";
+                    const currentData = getCurrentData();
 
-                currentData.forEach((item) => {
-                    const ob = Object.values(item);
-                    const rowData = ob.splice(',');
-                    if (rowData.length >= 2) {
-                        const rowItem = document.createElement('li');
-                        rowItem.className = 'list-item';
-                        rowItem.innerText = rowData.join(' | ') + ' | ';
+                    currentData.forEach((item) => {
+                        const ob = Object.values(item);
+                        const rowData = ob.splice(',');
+                        if (rowData.length >= 2) {
+                            const rowItem = document.createElement('li');
+                            rowItem.className = 'list-item';
+                            rowItem.innerText = rowData.join(' | ') + ' | ';
 
-                        const deleteButton = document.createElement('button');
-                        deleteButton.className = 'delete-row';
-                        deleteButton.innerText = 'Delete';
-                        deleteButton.addEventListener('click', () => {
-                            rowItem.remove();
-                        });
-                        rowItem.appendChild(deleteButton);
+                            const deleteButton = document.createElement('button');
+                            deleteButton.className = 'delete-row';
+                            deleteButton.innerText = 'Delete';
+                            deleteButton.addEventListener('click', () => {
+                                rowItem.remove();
+                            });
+                            rowItem.appendChild(deleteButton);
 
-                        const editButton = document.createElement('button');
-                        editButton.className = 'edit-row';
-                        editButton.innerText = 'Edit';
-                        editButton.addEventListener('click', () => {
-                            editRow(rowItem);
-                        });
-                        rowItem.appendChild(editButton);
-                        
-                        const editRowForm = document.createElement('form');
-                        editRowForm.className = 'edit-row-form';
-                        editRowForm.addEventListener('submit', event => {
-                            event.preventDefault();
-                            updateRow(rowItem, editRowForm);
-                        });
-                        
-                        const nameInputLabel = document.createElement('label');
-                        nameInputLabel.innerText = 'Name:';
-                        nameInputLabel.className = "form-label";
-                        const nameInput = document.createElement('input');
-                        nameInput.type = 'text';
-                        nameInput.className = "inN";
-                        nameInput.name = 'name';
-                        nameInput.value = rowData;
-                        editRowForm.appendChild(nameInputLabel);
-                        editRowForm.appendChild(nameInput);
+                            const editButton = document.createElement('button');
+                            editButton.className = 'edit-row';
+                            editButton.innerText = 'Edit';
+                            editButton.addEventListener('click', () => {
+                                editRow(rowItem);
+                            });
+                            rowItem.appendChild(editButton);
 
-                        
+                            const editRowForm = document.createElement('form');
+                            editRowForm.className = 'edit-row-form';
+                            editRowForm.addEventListener('submit', event => {
+                                event.preventDefault();
+                                updateRow(rowItem, editRowForm);
+                            });
 
-                        const submitButton = document.createElement('button');
-                        submitButton.type = 'submit';
-                        submitButton.className = "savebt"
-                        submitButton.innerText = 'Save';
-                        editRowForm.appendChild(submitButton);
-                        rowItem.appendChild(editRowForm);
-                        list.appendChild(rowItem);
-                    
-                    }
-                    
-                });
-                
-            }
-        
-            const paginationContainer = document.getElementById("pagination-container");
-            const totalPages = Math.ceil(data.length / dataPerPage);
-            console.log(totalPages);
+                            const nameInputLabel = document.createElement('label');
+                            nameInputLabel.innerText = 'Name:';
+                            nameInputLabel.className = "form-label";
+                            const nameInput = document.createElement('input');
+                            nameInput.type = 'text';
+                            nameInput.className = "inN";
+                            nameInput.name = 'name';
+                            nameInput.value = rowData;
+                            editRowForm.appendChild(nameInputLabel);
+                            editRowForm.appendChild(nameInput);
+
+
+
+                            const submitButton = document.createElement('button');
+                            submitButton.type = 'submit';
+                            submitButton.className = "savebt"
+                            submitButton.innerText = 'Save';
+                            editRowForm.appendChild(submitButton);
+                            rowItem.appendChild(editRowForm);
+                            list.appendChild(rowItem);
+
+                        }
+
+                    });
+
+                }
+                const paginationContainer = document.getElementById("pagination-container");
+
+                const totalPages = Math.ceil(data.length / dataPerPage);
+                console.log(totalPages);
                 for (let i = 1; i <= totalPages; i++) {
                     const button = document.createElement("button");
                     button.className = "pageNum";
@@ -233,24 +237,24 @@
                     if (i === currentPage) {
                         button.classList.add("active");
                     }
-                        button.addEventListener("click", () => {
-                            currentPage = i;
-                            render();
-                        });
-                        paginationContainer.appendChild(button);
-                    }
+                    button.addEventListener("click", () => {
+                        currentPage = i;
+                        render();
+                    });
+                    paginationContainer.appendChild(button);
+                }
 
 
                 function getCurrentData() {
                     const startIndex = (currentPage - 1) * dataPerPage;
                     const endIndex = startIndex + dataPerPage;
-                      console.log(startIndex );
-                      console.log(endIndex);
+                    console.log(startIndex);
+                    console.log(endIndex);
                     return data.slice(startIndex, endIndex);
                 }
-                    render()
+                render()
             });
-            
+
         function editRow(rowItem) {
             const editRowFormd = rowItem.querySelector('.edit-row-form');
 
@@ -295,7 +299,6 @@
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
         const list = document.getElementById('list');
-       // Function to filter the list items
         function filterListItems(searchTerm) {
             const items = list.querySelectorAll('li');
             items.forEach(item => {
@@ -314,9 +317,6 @@
             const searchTerm = searchInput.value.trim();
             filterListItems(searchTerm);
         });       // Render the pagination buttons
-       
-    
-
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 
