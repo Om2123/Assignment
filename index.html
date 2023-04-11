@@ -163,6 +163,8 @@
 
                 const currentData = getCurrentData();
 
+            function render(){
+
                 currentData.forEach((item) => {
                     const ob = Object.values(item);
                     const rowData = ob.splice(',');
@@ -186,14 +188,14 @@
                             editRow(rowItem);
                         });
                         rowItem.appendChild(editButton);
-
+                        
                         const editRowForm = document.createElement('form');
                         editRowForm.className = 'edit-row-form';
                         editRowForm.addEventListener('submit', event => {
                             event.preventDefault();
                             updateRow(rowItem, editRowForm);
                         });
-
+                        
                         const nameInputLabel = document.createElement('label');
                         nameInputLabel.innerText = 'Name:';
                         nameInputLabel.className = "form-label";
@@ -205,7 +207,7 @@
                         editRowForm.appendChild(nameInputLabel);
                         editRowForm.appendChild(nameInput);
 
-
+                        
 
                         const submitButton = document.createElement('button');
                         submitButton.type = 'submit';
@@ -214,21 +216,41 @@
                         editRowForm.appendChild(submitButton);
                         rowItem.appendChild(editRowForm);
                         list.appendChild(rowItem);
+                    
                     }
-
+                    
                 });
+                
+            }
+        
+            const paginationContainer = document.getElementById("pagination-container");
+            const totalPages = Math.ceil(data.length / dataPerPage);
+            console.log(totalPages);
+                for (let i = 1; i <= totalPages; i++) {
+                    const button = document.createElement("button");
+                    button.className = "pageNum";
+                    button.textContent = i;
+                    if (i === currentPage) {
+                        button.classList.add("active");
+                    }
+                        button.addEventListener("click", () => {
+                            currentPage = i;
+                            render();
+                        });
+                        paginationContainer.appendChild(button);
+                    }
 
 
                 function getCurrentData() {
                     const startIndex = (currentPage - 1) * dataPerPage;
                     const endIndex = startIndex + dataPerPage;
-                    //   console.log(startIndex );
+                      console.log(startIndex );
+                      console.log(endIndex);
                     return data.slice(startIndex, endIndex);
                 }
-
-                pagNo();
+                    render()
             });
-
+            
         function editRow(rowItem) {
             const editRowFormd = rowItem.querySelector('.edit-row-form');
 
@@ -243,7 +265,6 @@
                 editRowFormd.style.display = 'block';
             }
         }
-
         function updateRow(rowItem, form) {
             const nameInput = form.querySelector('input[name="name"]');
             const rowData = [nameInput.value];
@@ -274,8 +295,7 @@
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
         const list = document.getElementById('list');
-
-        // Function to filter the list items
+       // Function to filter the list items
         function filterListItems(searchTerm) {
             const items = list.querySelectorAll('li');
             items.forEach(item => {
@@ -285,41 +305,16 @@
                     item.classList.add('hidden');
                 }
             });
-        }
-
-        // Event listener for search button click
+        }       // Event listener for search button click
         searchButton.addEventListener('click', () => {
             const searchTerm = searchInput.value.trim();
             filterListItems(searchTerm);
-        });
-
-        // Event listener for search input keyup
+        });       // Event listener for search input keyup
         searchInput.addEventListener('keyup', () => {
             const searchTerm = searchInput.value.trim();
             filterListItems(searchTerm);
-        });
-
-
-        // Render the pagination buttons
-        function pagNo(){
-
-            const totalPages = Math.ceil(data.length / dataPerPage);
-            const paginationContainer = document.getElementById("pagination-container");
-            
-            for (let i = 1; i <= totalPages; i++) {
-                const button = document.createElement("button");
-                button.className = "pageNum";
-                button.textContent = i;
-                if (i === currentPage) {
-                    button.classList.add("active");
-                }
-                button.addEventListener("click", () => {
-                    currentPage = i;
-                });
-                paginationContainer.appendChild(button);
-            }
-            
-        }
+        });       // Render the pagination buttons
+       
     
 
     </script>
