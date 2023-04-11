@@ -201,7 +201,6 @@
             const editRowFormd = rowItem.querySelector('.edit-row-form');
 
             if (editRowFormd) {
-                // If an editRowFormd already exists, show it and exit the function
                 editRowFormd.style.display = 'block';
                 return;
             }
@@ -235,7 +234,6 @@
             });
             rowItem.appendChild(editBtn);
 
-            // Hide the edit form
             form.style.display = "none";
         }
 
@@ -243,7 +241,6 @@
         const searchButton = document.getElementById('searchButton');
         const list = document.getElementById('list');
 
-        // Function to filter the list items
         function filterListItems(searchTerm) {
             const items = list.querySelectorAll('li');
             items.forEach(item => {
@@ -255,13 +252,11 @@
             });
         }
 
-        // Event listener for search button click
         searchButton.addEventListener('click', () => {
             const searchTerm = searchInput.value.trim();
             filterListItems(searchTerm);
         });
 
-        // Event listener for search input keyup
         searchInput.addEventListener('keyup', () => {
             const searchTerm = searchInput.value.trim();
             filterListItems(searchTerm);
