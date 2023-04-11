@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>CSV Data</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #data-list {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+            .list-item {
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.delete-row,.edit-row {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: #fff;
+}
+.savebt{
+    
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+}
+.inN{
+    padding: 3px;
+    background-color: #ede2de;
+    border: 6px black;
+}
+
+.delete-row {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.edit-row {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.edit-row-form {
+  display: block;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+
+        .row-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+        }
+
+        .row-actions button {
+            margin-left: 10px;
+        }
+
+        .edit-row-form {
+            display: none;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .edit-row-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .edit-row-form input[type="text"] {
+            margin-bottom: 10px;
+        }
+
+        .edit-row-form button[type="submit"] {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mx-auto max-w-md bg-white rounded-xl shadow-md overflow-hidden">
+        <h1 class="text-2xl font-bold mt-6 mb-2">My List</h1>
+        <div class="flex items-center border-b-2 border-gray-200 py-2">
+            <input type="text" placeholder="Search..." id="searchInput"
+                class="bg-transparent focus:outline-none px-2 py-1 w-full">
+            <button id="searchButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 ml-2 rounded">
+                Search
+            </button>
+        </div>
+        <ul class="divide-y divide-gray-200">
+
+            <div id="list"></div>
+            <!-- List items go here -->
+        </ul>
+    </div>
+    <script>
+        fetch('data.csv')
+            .then(response => response.text())
+            .then(data => {
+                const list = document.getElementById('list');
+                const rows = data.split('\n');
+
+                rows.forEach(row => {
+                    const rowData = row.split(',');
+
+                    if (rowData.length >= 2) {
+                        const rowItem = document.createElement('li');
+                        rowItem.className = 'list-item';
+                        rowItem.innerText = rowData.join(' | ') + ' | ';
+
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'delete-row';
+                        deleteButton.innerText = 'Delete';
+                        deleteButton.addEventListener('click', () => {
+                            rowItem.remove();
+                        });
+                        rowItem.appendChild(deleteButton);
+
+                        const editButton = document.createElement('button');
+                        editButton.className = 'edit-row';
+                        editButton.innerText = 'Edit';
+                        editButton.addEventListener('click', () => {
+                            editRow(rowItem);
+                        });
+                        rowItem.appendChild(editButton);
+
+                        const editRowForm = document.createElement('form');
+                        editRowForm.className = 'edit-row-form';
+                        editRowForm.addEventListener('submit', event => {
+                            event.preventDefault();
+                            updateRow(rowItem, editRowForm);
+                        });
+
+                        const nameInputLabel = document.createElement('label');
+                        nameInputLabel.innerText = 'Name:';
+                        nameInputLabel.className = "form-label";
+                        const nameInput = document.createElement('input');
+                        nameInput.type = 'text';
+                        nameInput.className = "inN";
+                        nameInput.name = 'name';
+                        nameInput.value = rowData;
+                        editRowForm.appendChild(nameInputLabel);
+                        editRowForm.appendChild(nameInput);
+
+
+
+                        const submitButton = document.createElement('button');
+                        submitButton.type = 'submit';
+                        submitButton.className = "savebt"
+                        submitButton.innerText = 'Save';
+                        editRowForm.appendChild(submitButton);
+                        rowItem.appendChild(editRowForm);
+                        list.appendChild(rowItem);
+                    }
+                });
+            });
+
+        function editRow(rowItem) {
+            const editRowFormd = rowItem.querySelector('.edit-row-form');
+
+            if (editRowFormd) {
+                // If an editRowFormd already exists, show it and exit the function
+                editRowFormd.style.display = 'block';
+                return;
+            }
+            if (editRowFormd.style.display === 'block') {
+                editRowFormd.style.display = 'none';
+            } else {
+                editRowFormd.style.display = 'block';
+            }
+        }
+
+        function updateRow(rowItem, form) {
+            const nameInput = form.querySelector('input[name="name"]');
+            const rowData = [nameInput.value];
+
+            rowItem.textContent = rowData[0];
+
+            form.style.display = "none";
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.addEventListener('click', () => {
+                rowItem.remove();
+            });
+            rowItem.appendChild(deleteBtn);
+
+            const editBtn = document.createElement('button');
+            editBtn.classList.add('edit-btn');
+            editBtn.textContent = 'Edit';
+            editBtn.addEventListener('click', () => {
+                editRow(rowItem);
+            });
+            rowItem.appendChild(editBtn);
+
+            // Hide the edit form
+            form.style.display = "none";
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const list = document.getElementById('list');
+
+        // Function to filter the list items
+        function filterListItems(searchTerm) {
+            const items = list.querySelectorAll('li');
+            items.forEach(item => {
+                if (item.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        // Event listener for search button click
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchInput.value.trim();
+            filterListItems(searchTerm);
+        });
+
+        // Event listener for search input keyup
+        searchInput.addEventListener('keyup', () => {
+            const searchTerm = searchInput.value.trim();
+            filterListItems(searchTerm);
+        });
+
+
+        const li = document.getElementsByTagName("li")
+        for (let i = 0; i < li.length; i++) {
+  li[i].classList.add('p-9', 'bg-white', 'border', 'border-gray-300', 'rounded-lg', 'shadow-sm', 'mb-4');
+}
+
+    </script>
+</body>
+
+</html>
